@@ -1,0 +1,26 @@
+PHPUnit 3.6.10 by Sebastian Bergmann.
+
+ESSSSSS
+
+Time: 1 second, Memory: 2.50Mb
+
+There was 1 error:
+
+1) GuzzleTest::testConnectionCountryIndex
+GuzzleHttp\Exception\ClientException: Client error response [url] http://kilobeat.com/country/index [status code] 401 [reason phrase] Unauthorized
+
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Exception/RequestException.php:89
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Subscriber/HttpError.php:33
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Event/Emitter.php:109
+/var/www/basic/vendor/guzzlehttp/guzzle/src/RequestFsm.php:91
+/var/www/basic/vendor/guzzlehttp/guzzle/src/RequestFsm.php:132
+/var/www/basic/vendor/react/promise/src/FulfilledPromise.php:24
+/var/www/basic/vendor/guzzlehttp/ringphp/src/Future/CompletedFutureValue.php:55
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Message/FutureResponse.php:43
+/var/www/basic/vendor/guzzlehttp/guzzle/src/RequestFsm.php:135
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Client.php:232
+/var/www/basic/vendor/guzzlehttp/guzzle/src/Client.php:192
+/var/www/basic/tests/GuzzleTest.php:15
+
+FAILURES!
+Tests: 1, Assertions: 0, Errors: 1, Skipped: 6.
