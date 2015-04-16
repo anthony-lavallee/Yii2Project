@@ -8,15 +8,17 @@ $config = [
     'bootstrap' => ['log', 'gii'],
     'components' => [
         'urlManager' => [
+
         'enablePrettyUrl' => true,
         //'enableStrictParsing' => true,
         'showScriptName' => false,
         'rules' => [
-          ['class' => 'yii\rest\UrlRule', 'pluralize' => false, 'controller' => 'country'],
+          ['class' => 'yii\rest\UrlRule', 'pluralize' => false, 'controller' => 'country',
+          /*'POST oauth2/<action:\w+>' => 'oauth2/default/<action>'*/],
       ],
   ],
         'authManager' => [
-        'class' => 'yii\rbac\PhpManager',
+        'class' => 'yii\rbac\DbManager',
         ],
 
         'request' => [
@@ -31,7 +33,8 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            //'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\Oauthuser',
             'enableAutoLogin' => true,
 
             //'enableSession' => false,
@@ -90,9 +93,33 @@ $config = [
             ],
         ]
 
-        
-
     ],
+
+       'modules' => [
+            'oauth2' => [
+        'class' => 'filsh\yii2\oauth2server\Module',
+        'options' => [
+            'token_param_name' => 'accessToken',
+            'access_lifetime' => 3600 * 24
+        ],
+        'storageMap' => [
+            'user_credentials' => 'app\models\User'
+        ],
+        'grantTypes' => [
+            'client_credentials' => [
+                'class' => '\OAuth2\GrantType\ClientCredentials',
+                'allow_public_clients' => false
+            ],
+            'user_credentials' => [
+                'class' => '\OAuth2\GrantType\UserCredentials'
+            ],
+            'refresh_token' => [
+                'class' => '\OAuth2\GrantType\RefreshToken',
+                'always_issue_new_refresh_token' => true
+            ]
+        ],
+    ]
+        ],
     'params' => $params,
 ];
 

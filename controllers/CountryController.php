@@ -11,20 +11,25 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
 
-use yii\filters\auth\CompositeAuth;
+//use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 
 use yii\helpers\ArrayHelper;
+use filsh\yii2\oauth2server\filters\ErrorToExceptionFilter;
+use filsh\yii2\oauth2server\filters\auth\CompositeAuth;
 
-include 'RbacController.php';
+
 
 
 /**
  * CountryController implements the CRUD actions for Country model.
  */
-class CountryController extends ActiveController
+
+//class CountryController extends ActiveController
+class CountryController extends Controller
+//class CountryController extends \yii\rest\Controller
 {
     public  $modelClass = 'app\models\Country';
 
@@ -43,6 +48,20 @@ class CountryController extends ActiveController
                 
             ],
 
+              'authenticator' => [
+                'class' => CompositeAuth::className(),
+                'except' => ['login'],
+                'authMethods' => [
+                    ['class' => HttpBasicAuth::className()],
+                    ['class' => HttpBearerAuth::className()],
+                    ['class' => QueryParamAuth::className(), 'tokenParam' => 'accessToken'],
+                ]
+            ],
+            'exceptionFilter' => [
+                'class' => ErrorToExceptionFilter::className()
+            ],
+        ]);
+
             //'authenticator' => [
             //   'class' => HttpBasicAuth::className(),
                 
@@ -56,21 +75,16 @@ class CountryController extends ActiveController
                     //QueryParamAuth::className(),
                 ],*/
             //],
-        ]);
-          //var_dump(parent::behaviors);
+        //]);
     }
 
      public function auth($username, $password)
     {
-        echo "<script>alert('$username')</script>";
-        echo "<script>alert('$password')</script>";
-        //$user = new User();
-        //$identity = $user->findByUsername($username);
-        return \app\models\User::findOne([
+        return \app\models\Oauthuser::findOne([
+        //return \app\models\User::findOne([
                       'username' => $username,
                       'password' => $password,
                   ]);
-        //return $identity;
     }
 
 
@@ -81,7 +95,6 @@ class CountryController extends ActiveController
      */
     public function actionIndex()
     {
-        //actionInit();
         $searchModel = new CountrySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -111,18 +124,18 @@ class CountryController extends ActiveController
     public function actionCreate()
     {
 
-        //if(\Yii::$app->user->can('createCountry'))
-        //{
-            $model = new Country();
+        $model = new Country();
 
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->code]);
-            } else {
-                return $this->render('create', [
-                    'model' => $model,
-                ]);
-            }
-        //}
+        if ($model->load(Yii::$app->request->post()) && $model->save()) 
+        {
+            return $this->redirect(['view', 'id' => $model->code]);
+        } 
+        else 
+        {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**
@@ -135,11 +148,23 @@ class CountryController extends ActiveController
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->code]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
+        if (\Yii::$app->user->can('updateCountry', ['country' => $model]))
+        {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) 
+            {
+                return $this->redirect(['view', 'id' => $model->code]);
+            } 
+            else 
+            {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
+        }
+        else
+        {
+            return $this->render('view', [
+            'model' => $this->findModel($id),
             ]);
         }
     }
@@ -172,4 +197,6 @@ class CountryController extends ActiveController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+
 }

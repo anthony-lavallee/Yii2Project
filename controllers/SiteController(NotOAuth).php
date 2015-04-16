@@ -10,6 +10,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
 
+use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBasicAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -21,16 +22,14 @@ use yii\log\Logger;
 use yii\authclient\BaseClient;
 use yii\web\Response;
 
-use yii\helpers\ArrayHelper;
-use filsh\yii2\oauth2server\filters\ErrorToExceptionFilter;
-use filsh\yii2\oauth2server\filters\auth\CompositeAuth;
 
+//include 'RbacController.php';
 
 class SiteController extends Controller
 {
     public function behaviors()
     {
-       return ArrayHelper::merge(parent::behaviors(), [
+        return [
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout'],
@@ -52,20 +51,6 @@ class SiteController extends Controller
 
             ],
 
-               
-            /*'authenticator' => [
-                'class' => CompositeAuth::className(),
-                'except' => ['login'],
-                'authMethods' => [
-                    ['class' => HttpBearerAuth::className()],
-                    ['class' => QueryParamAuth::className(), 'tokenParam' => 'accessToken'],
-                ]
-            ],
-            'exceptionFilter' => [
-                'class' => ErrorToExceptionFilter::className()
-            ],*/
-        ]);
-
              //'authenticator' => [
                 //'class' => HttpBasicAuth::className(),
                 //'class' => QueryParamAuth::className(),
@@ -80,7 +65,7 @@ class SiteController extends Controller
             //],
         
 
-        //];
+        ];
     }
 
     public function actions()
@@ -103,6 +88,8 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
+
+
         log(Yii::$app->user->isGuest);
         return $this->render('index');
     }
@@ -194,13 +181,11 @@ public function onAuthSuccess($client)
 
     $attributes = $client->getUserAttributes();
 
-
     /** @var Auth $auth */
     $auth = Auth::find()->where([
         'source' => $client->getId(),
         'source_id' => $attributes['id'],
     ])->one();
-
         
     if (Yii::$app->user->isGuest) 
     {

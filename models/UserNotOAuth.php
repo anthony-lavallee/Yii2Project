@@ -4,18 +4,14 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use Yii;
-use app\vendor\bshaffer;
 
-class User extends ActiveRecord implements \yii\web\IdentityInterface, \OAuth2\Storage\UserCredentialsInterface
+class User extends ActiveRecord implements \yii\web\IdentityInterface
 {
     public $id;
     public $username;
     public $password;
     public $authKey;
     public $accessToken;
-
-
-    
 
     private static $users = [
         '100' => [
@@ -30,8 +26,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface, \OAuth2\S
             'username' => 'demo',
             'password' => 'demo',
             'authKey' => 'test101key',
-            //'accessToken' => '100-token',
-            'accessToken' => '9c84bedfd88abfd4388022b175f1b81f68672ffc',
+            'accessToken' => '101-token',
         ],
     ];
 
@@ -53,6 +48,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface, \OAuth2\S
     {
         foreach (self::$users as $user) {
             if ($user['accessToken'] === $token) {
+                
                 return new static($user);
             }
         }
@@ -132,15 +128,4 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface, \OAuth2\S
     {
         return $this->password === $password;
     }
-
-    public function checkUserCredentials($username, $password)
-    {
-
-    }
-
-    public function getUserDetails($username)
-    {
-
-    }
-
 }
